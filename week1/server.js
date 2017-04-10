@@ -1,9 +1,10 @@
-var express = require('express');
 var path = require('path');
+var express = require('express');
 
 var app = express();
 
-var server = require('html').createServer(app);
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 
 // Require Routes
 var indexRouter = require('./routes/index');
@@ -16,6 +17,10 @@ app.use(express.static('public'));
 
 app.use('/', indexRouter);
 
-app.listen(3001, function() {
+io.on('connection', function(socket) {
+	console.log('a user connected');
+});
+
+server.listen(3001, function() {
 	console.log('Listening on port 3001');
 });
