@@ -1,0 +1,32 @@
+{
+  "name": "Real-time-web",
+  "version": "1.0.0",
+  "description": "An example module to illustrate the usage of a package.json",
+  "author": "Dylan van Sprang <dylanvansprang@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dylanvans/real-time-web"
+  },
+  "scripts": {
+    "lint": "xo",
+    "start": "node server.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^14.3.0",
+    "xo": "^0.18.1"
+  },
+  "dependencies": {
+    "ejs": "^2.5.6",
+    "express": "^4.15.2"
+  },
+  "xo": {
+    "esnext": false,
+    "ignore": [
+      "public/js/build.js"
+    ],
+    "rules": {
+      "space-before-function-paren": 0
+    }
+  }
+}
