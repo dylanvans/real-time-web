@@ -1,10 +1,13 @@
+// Require
 var path = require('path');
 var express = require('express');
+var server = require('http');
+var io = require('socket.io')
 
 var app = express();
 
-var server = require('http').createServer(app);
-var io = require('socket.io')(server);
+server = server.createServer(app);
+io = io(server);
 
 // Require Routes
 var indexRouter = require('./routes/index');
@@ -19,6 +22,11 @@ app.use('/', indexRouter);
 
 io.on('connection', function(socket) {
 	console.log('a user connected');
+
+	socket.on('send message', function(data) {
+		console.log('send message: ', data)
+		io.emit('send message', data);
+	});
 });
 
 server.listen(3001, function() {
