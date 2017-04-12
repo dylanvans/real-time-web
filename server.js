@@ -29,6 +29,6 @@ io.on('connection', function(socket) {
 	});
 });
 
-server.listen(3001, function() {
+server.listen(process.env.PORT || 3001, function() {
 	console.log('Listening on port 3001');
 });
