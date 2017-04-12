@@ -29,8 +29,5 @@
     "rules": {
       "space-before-function-paren": 0
     }
-  },
-  "engines": {
-    "node": "7.8.0"
   }
 }
