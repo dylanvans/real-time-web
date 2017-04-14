@@ -3,6 +3,7 @@ var path = require('path');
 var express = require('express');
 var server = require('http');
 var io = require('socket.io')
+var indexRouter = require('./routes/index');
 
 var app = express();
 
@@ -10,7 +11,7 @@ server = server.createServer(app);
 io = io(server);
 
 // Require Routes
-var indexRouter = require('./routes/index');
+
 
 // View engine
 app.set('view engine', 'ejs');

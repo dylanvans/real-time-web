@@ -1,9 +1,17 @@
 <% include partials/header.ejs %>
-	<form action="" class="message-form">
-		<fieldset>
-			<label for="message-input">Enter message</label>
-			<input type="text" id="message-input" class="message-input">
-		</fieldset>
-		<button type="submit">Send message</button>
-	</form>
+	<h1>Socket.io Chat app</h1>
+	<div class="container-chat">
+		<section>
+			<ul class="message-list">
+				
+			</ul>
+		</section>
+		<form action="" class="message-form">
+			<fieldset>
+				<label for="message-input">Enter message</label>
+				<input type="text" id="message-input" class="message-input">
+			</fieldset>
+			<button type="submit">Send</button>
+		</form>
+	</div>
 <% include partials/footer.ejs %>

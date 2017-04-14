@@ -4,6 +4,7 @@
 
 		var messageFormEl = document.querySelector('.message-form');
 		var messageInputEl = document.querySelector('.message-input');
+		var messageList = document.querySelector('.message-list');
 
 		messageFormEl.addEventListener('submit', function(e){
 			e.preventDefault();
@@ -12,7 +13,7 @@
 		});
 
 		socket.on('send message', function(data) {
-			messageFormEl.insertAdjacentHTML('afterend', `<p> ${data} </p>`)
+			messageList.insertAdjacentHTML('beforeend', `<li> ${data} </li>`)
 		});
 	}
 
