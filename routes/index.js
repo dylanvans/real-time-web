@@ -3,6 +3,17 @@ var express = require('express');
 var router = express.Router();
 
 router.get('/', function(req, res) {
+	var stream = router.client.stream('statuses/filter', {track: 'scorsese'});
+
+	stream.on('data', function(event) {
+	  // console.log(event && event.text);
+	});
+
+	router.client.get('trends/place', {id: 1},  function(err, data) {
+	  // if(error) throw error;
+	  console.log(data);  // The favorites.
+	});
+
 	res.render('index');
 });
 
