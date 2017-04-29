@@ -1,6 +1,6 @@
 // Require
 var path = require('path');
-var server = require('http');
+var http = require('http');
 var request = require('request');
 var dotenv = require('dotenv');
 var express = require('express');
@@ -11,8 +11,8 @@ var indexRouter = require('./routes/index');
 // Config
 var app = express();
 dotenv.config();
-server = server.createServer(app);
-io = io(server);
+http = http.createServer(app);
+io = io(http);
 
 app.twitterConsumerKey = process.env.TWITTER_CONSUMER_KEY;
 app.twitterConsumerSecret = process.env.TWITTER_CONSUMER_SECRET;
@@ -32,30 +32,47 @@ var client = new twitter({
 	access_token_secret: app.twitterAccesTokenSecret
 });
 
+var trendingArray = [];
+
+function getTrendingTopics() {
+	// The Netherlands id 23424909
+	// Global id 1
+	client.get('trends/place', {id: 23424909},  function(err, data) {
+		if (err) console.error(err);
+		console.log('updating trending topics');
+
+		for (var i = 0; i < 5; i++) {
+			trendingArray.push(data[0].trends[i].name);
+		}
+
+		var trackTopics = trendingArray.join(', ');
+		setStream(trackTopics);
+	});
+}
+
+function setStream(trackTopics) {
+	var stream = client.stream('statuses/filter', { track: trackTopics });
+console.log(trackTopics)
+	stream.on('data', function(tweet) {
+		if(tweet.text) {
+			trendingArray.forEach(function(topic) {
+				if((tweet.text).includes(topic)) {
+					console.log(topic)
+				}		
+			});
+		}
+	});
+}
+
+getTrendingTopics();
+setInterval(getTrendingTopics, 300000);
+
 app.get('/', function(req, res) {
-	var stream = client.stream('statuses/filter', {track: 'scorsese'});
-
-	stream.on('data', function(event) {
-	  // console.log(event && event.text);
-	});
-
-	client.get('trends/place', {id: 1},  function(err, data) {
-	  // if(error) throw error;
-	  console.log(data);  // The favorites.
-	});
+	console.log(trendingTopics)
 
 	res.render('index');
 });
 
-// io.on('connection', function(socket) {
-// 	console.log('a user connected');
-
-// 	socket.on('send message', function(data) {
-// 		console.log('send message: ', data);
-// 		io.emit('send message', data);
-// 	});
-// });
-
-server.listen(process.env.PORT || 3001, function() {
+http.listen(process.env.PORT || 3001, function() {
 	console.log('Listening on port 3001');
 });
