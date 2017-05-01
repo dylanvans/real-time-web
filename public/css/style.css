@@ -13,65 +13,20 @@ h1 {
 	font-weight: inherit;
 }
 
-.container-chat {
-	box-shadow: 0px 14px 7px -9px #2a4035;
-	color: #202020;
-	margin: 1em;
-	padding: 0;
-	background-color: white;
-	display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-	max-width: 30em;
+.container-bar-chart {
 	width: 100%;
-	min-height: 50vh;
+	height: 60vh;
 }
 
-.message-list {
-	margin: 1em;
-	padding: 0;
-}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #727272;
+  shape-rendering: crispEdges; }
 
-.message-list li {
-	list-style-type: none;
-	padding: 1em;
-    background-color: #829a8e;
-    margin-bottom: .5em;
-    max-width: 60%;
-    color: white;
-}
+text {
+  fill: #727272; }
 
-.message-form {
-	padding: 1em;
-	background-color: #e3fff1;
-}
-
-.message-form fieldset {
-	border: 0;
-	margin: 0;
-	padding: 0;
-}
-
-.message-form label {
-	display: block;
-}
-
-.message-form input {
-	font-family: inherit;
-	border: 1px solid #d4f1e2;
-	width: 100%;
-    padding: .5em;
-    font-size: inherit;
-    box-sizing: border-box;
-}
-
-.message-form button {
-	margin-top: .5em;
-    font-size: inherit;
-    font-family: inherit;
-    font-weight: inherit;
-    padding: .5em .7em;
-    border: 0;
-    color: white;
-    background-color: #4e7361;
-}
+.label {
+  font-size: .8em;
+  font-weight: 600; }

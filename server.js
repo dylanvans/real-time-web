@@ -35,29 +35,38 @@ var client = new twitter({
 var trendingArray = [];
 
 function getTrendingTopics() {
+	trendingArray = [];
 	// The Netherlands id 23424909
 	// Global id 1
-	client.get('trends/place', {id: 23424909},  function(err, data) {
+	client.get('trends/place', {id: 1},  function(err, data) {
 		if (err) console.error(err);
 		console.log('updating trending topics');
 
+		var trackString = [];
 		for (var i = 0; i < 5; i++) {
-			trendingArray.push(data[0].trends[i].name);
+			var topicObject = {
+				name: data[0].trends[i].name,
+				numberOfTweets: 0
+			}
+			trendingArray.push(topicObject);
+			trackString.push(data[0].trends[i].name);
 		}
 
-		var trackTopics = trendingArray.join(', ');
-		setStream(trackTopics);
+		io.emit('trendingtopics', trendingArray)
+		trackString = trackString.join(', ');
+		setStream(trackString);
 	});
 }
 
 function setStream(trackTopics) {
 	var stream = client.stream('statuses/filter', { track: trackTopics });
-console.log(trackTopics)
+
 	stream.on('data', function(tweet) {
 		if(tweet.text) {
 			trendingArray.forEach(function(topic) {
-				if((tweet.text).includes(topic)) {
-					console.log(topic)
+				if((tweet.text).includes(topic.name)) {
+					topic.numberOfTweets++
+					io.emit('topic tweet', trendingArray);
 				}		
 			});
 		}
@@ -65,11 +74,15 @@ console.log(trackTopics)
 }
 
 getTrendingTopics();
-setInterval(getTrendingTopics, 300000);
+setInterval(getTrendingTopics, 60000);
+
+io.on('connection', function(socket) {
+	if(trendingArray) {
+		io.emit('trendingtopics', trendingArray)
+	}
+});
 
 app.get('/', function(req, res) {
-	console.log(trendingTopics)
-
 	res.render('index');
 });
 
