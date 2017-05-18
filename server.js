@@ -57,7 +57,6 @@ io.on('connection', function(socket) {
 				socket.trackString = trackString
 				socket.emit('trendingtopics', topics);
 			}
-		
 			console.log('new user ', users)
 		}
 	});
