@@ -1,68 +1,99 @@
-(function () {
-	class App {
-		constructor() {
-			this.barChart = new BarChart(this);
-			this.sockets = new Sockets(this);
-		}
+(function() {
+	var app = {
+		init: function() {
+			user.init();
+		},
+	};
 
-		init() {
-			this.sockets.makeConnection();
-		}
-	}
-
-	class Sockets {
-		constructor(app) {
-			this.app = app;
+	var user = {
+		init: function() {
+			this.connectSocket();
+			this.usernameForm();
+		},
+		connectSocket: function() {
 			this.socket = io.connect();
+		},
+		usernameForm: function() {
+			this.formContainer = document.querySelector('.container-user-form');
+			this.formEl = this.formContainer.querySelector('.username-form');
+			this.userInputEl = this.formEl.querySelector('.username-input');
+			this.feedbackEl = this.formEl.querySelector('.username-error');
+
+			this.formEl.addEventListener('submit', function(e) {
+				e.preventDefault();
+
+				this.socket.emit('new user', this.userInputEl.value, function(data) {
+					if (data) {
+						this.formContainer.classList.add('hide');
+						twitter.getTrendingTopics();
+					} else {
+						this.feedbackEl.innerHTML = 'Username already in use';
+					}
+				}.bind(this));
+			}.bind(this));
 		}
+	};
 
-		makeConnection() {
-			var topicsContainer = document.querySelector('.container-trending-topic');
+	var twitter = {
+		getTrendingTopics: function() {
+			user.socket.on('trendingtopics', function(data) {
+				this.trendingTopics = data;
+				game.chooseTopic();
+			}.bind(this));
+		},
+		getTweets: function() {
+			user.socket.on('new tweet', function(data) {
+				barChart.update(data)
+			});
+		}
+	};
 
-			this.socket.on('trendingtopics', function(topics) {
-				topicsContainer.innerHTML = '';
+	var game = {
+		chooseTopic: function() {
+			this.chooseTopicContainer = document.querySelector('.container-choose-topic');
+			this.topicOptionsContainer = this.chooseTopicContainer.querySelector('.container-topic-options');
 
-				topics.forEach(function(topic) {
-					var el = document.createElement('div');
-					var cleanId = cleanString(topic.name);
+			this.chooseTopicContainer.classList.remove('hide');
 
-					el.innerHTML = topic.name;
-					el.id = 'topic-' + cleanId;
-					topicsContainer.appendChild(el);
+			twitter.trendingTopics.forEach(function(topic) {
+				var element = document.createElement('li');
+				element.classList.add('topic-option');
+				element.innerHTML = topic.name;
+				element.id = topic.name;
+
+				element.addEventListener('click', function() {
+					user.socket.prediction = this.id;
+					game.start();
 				});
 
-				app.barChart.set(topics);
-			});
+				this.topicOptionsContainer.appendChild(element);
+			}.bind(this));
+		},
+		start: function() {
+			this.gameContainer = document.querySelector('.container-game');
 
-			this.socket.on('topic tweet', function(data) {
-				app.barChart.update(data)
-				// var cleanId = cleanString(topic.name);
-				// document.querySelector('#topic-' + cleanId).innerHTML = topic.numberOfTweets;
-			});
+			user.socket.emit('set streams');
 
-			function cleanString(string) {
-				// source: https://stackoverflow.com/questions/3780696/javascript-string-replace-with-regex-to-strip-off-illegal-characters?answertab=votes#tab-top
-				return string.replace(/[|&;$%@"#<>()+,]/g, "");
-			}
+			twitter.getTweets();
+
+			this.chooseTopicContainer.classList.add('hide');
+			this.gameContainer.classList.remove('hide');
+			
+			barChart.set(twitter.trendingTopics);
 		}
-	}
+	};
 
-	class BarChart {
-		constructor(app) {
-			this.app = app
-		}
-
-		set(data) {
-			console.log(this)
+	var barChart = {
+		set: function(data) {
 			this.chartContainer = document.querySelector('.container-bar-chart');
 			this.margin = {top: 10, right: 10, bottom: 10, left: 10};
 			this.width = this.chartContainer.offsetWidth - this.margin.left - this.margin.right;
 			this.height = this.chartContainer.offsetHeight - this.margin.top - this.margin.bottom;
 
-			this.svg = d3.select(".container-bar-chart")
-							.append("svg")
-					    	.attr("width", this.width)
-					    	.attr("height", this.height);
+			this.svg = d3.select('.container-bar-chart')
+							.append('svg')
+							.attr('width', this.width)
+							.attr('height', this.height);
 
 			this.barChartWidth = this.width - 70;
 			this.barChartHeight = this.height - 20;
@@ -80,38 +111,42 @@
 							.scale(this.yScale)
 							.orient('left');
 
-			this.barGroup = this.svg.append("g")
-					.attr("class", "group-bar-chart")
-					.attr("transform", "translate(" + (this.width - this.barChartWidth) + "," + ((this.height - this.barChartHeight) - (this.margin.top*2)) + ")");
-
+			this.barGroup = this.svg.append('g')
+					.attr('class', 'group-bar-chart')
+					.attr('transform', 'translate(' + (this.width - this.barChartWidth) + ',' + ((this.height - this.barChartHeight) - (this.margin.top * 2)) + ')');
 			this.update(data);
-		}
-
-		update(data) {
+		},
+		update: function(data) {
 			document.querySelector('.group-bar-chart').innerHTML = '';
 
-			this.xScale.domain(data.map(function(d) { return d.name }));
-			this.yScale.domain([d3.min(data, function(d, i) { return d.numberOfTweets; }), (d3.max(data, function(d, i) { return d.numberOfTweets; }) + 10)]);
+			this.xScale.domain(data.map(function(d) {
+				return d.name;
+			}));
 
-			this.barGroup.append("g")
-				.attr("class", "x-axis axis axis-bar-chart")
-				.attr("transform", "translate(0," + this.barChartHeight + ")")
+			this.yScale.domain([d3.min(data, function(d) {
+				return d.numberOfTweets;
+			}), (d3.max(data, function(d) {
+				return d.numberOfTweets;
+			}) + 10)]);
+
+			this.barGroup.append('g')
+				.attr('class', 'x-axis axis axis-bar-chart')
+				.attr('transform', 'translate(0,' + this.barChartHeight + ')')
 				.call(this.xAxis);
 
-			this.barGroup.append("g")
-					.attr("class", "y-axis axis axis-bar-chart")
+			this.barGroup.append('g')
+					.attr('class', 'y-axis axis axis-bar-chart')
 						.call(this.yAxis)
-						.append("text")
-						.classed("label label-bar", true)
-						.attr("transform", "rotate(-90)")
-						.attr("y", -35)
-						.attr("x", -(this.barChartHeight))
-						.text("TOTAL TWEETS");
+						.append('text')
+						.classed('label label-bar', true)
+						.attr('transform', 'rotate(-90)')
+						.attr('y', -35)
+						.attr('x', -(this.barChartHeight))
+						.text('TOTAL TWEETS');
 
 			var bars = this.barGroup.selectAll('bar').data(data);
 
-			bars.exit()
-				.remove();
+			bars.exit().remove();
 
 			var xScale = this.xScale;
 			var yScale = this.yScale;
@@ -126,6 +161,6 @@
 		}
 	}
 
-	var app = new App();
 	app.init();
+
 })();

@@ -1,18 +1,37 @@
 body {
-	color: white;
+	color: #333;
 	font-family: Avenir, sans-serif;
 	font-weight: 100;
 	margin: 0;
+}
+
+.container-content {
+	width: 100%;
+	height: 100vh;
 	display: flex;
-	flex-direction: column;
+	justify-content: center;
 	align-items: center;
-	background-color: #829a8e;
+	background-color: #ffd78d;
 }
 
 h1 {
+	margin: 0;
 	font-weight: inherit;
 }
 
+
+
+/* ========================================================
+//	Game
+// ======================================================*/
+.container-game {
+	width: 100%;
+	height: 100%
+}
+
+/* ========================================================
+//	Bar chart
+// ======================================================*/
 .container-bar-chart {
 	width: 100%;
 	height: 60vh;
@@ -30,3 +49,18 @@ text {
 .label {
   font-size: .8em;
   font-weight: 600; }
+
+
+
+/* ========================================================
+//	Lightbox
+// ======================================================*/
+.lightbox {
+	background-color: white;
+	z-index: 1;
+	padding: 1em;
+}
+
+.hide {
+	display: none;
+}

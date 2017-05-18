@@ -1,6 +1,39 @@
 <% include partials/header.ejs %>
-	<h1>Twitter</h1>
-	<div class="container-trending-topic"></div>
-	<div class="container-bar-chart"></div>
+	<article class="container-content">
+		<div class="container-user-form lightbox">
+			<header>
+				<h1>Trendwatch Twitter</h1>
+				<h2>Choose a username!</h2>
+			</header>
+			<section>
+				<form class="username-form">
+			    	<fieldset>
+			    		<label id="username">Username</label>
+			    		<input type="text" name="username" class="username-input">
+			    		<p class="username-error"></p>
+			    	</fieldset>
+			    	<button type="submit">Go</button>
+		    	</form>
+			</section>
+		</div>
 
+		<div class="container-choose-topic hide lightbox">
+			<header>
+				<h1>Choose a topic!</h1>
+				<p>Predict which trending topic will get the most tweets in 2 minutes</p>
+			</header>
+			<section>
+				<ul class="container-topic-options">
+					
+				</ul>
+			</section>
+		</div>
+		<div class="container-game lightbox hide">
+			<header>
+				<h1>Trendwatch Twitter</h1>
+			</header>
+			<div class="container-trending-topic"></div>
+			<div class="container-bar-chart"></div>
+		</div>
+	</article>
 <% include partials/footer.ejs %>

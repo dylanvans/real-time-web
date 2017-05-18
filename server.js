@@ -13,6 +13,7 @@ var app = express();
 dotenv.config();
 http = http.createServer(app);
 io = io(http);
+var users = [];
 
 app.twitterConsumerKey = process.env.TWITTER_CONSUMER_KEY;
 app.twitterConsumerSecret = process.env.TWITTER_CONSUMER_SECRET;
@@ -32,55 +33,82 @@ var client = new twitter({
 	access_token_secret: app.twitterAccesTokenSecret
 });
 
-var trendingArray = [];
+io.on('connection', function(socket) {
+	socket.on('new user', function(data, callback) {
+		var userFound = false;
 
-function getTrendingTopics() {
-	trendingArray = [];
-	// The Netherlands id 23424909
-	// Global id 1
-	client.get('trends/place', {id: 1},  function(err, data) {
-		if (err) console.error(err);
-		console.log('updating trending topics');
+		for (var i = 0; i < users.length; i++) {
+			if (users[i].username == data) {
+				callback(false);
+				userFound = true;
+				break;
+			}
+		}
 
+		if (!userFound) {
+			callback(true);
+			socket.username = data;
+			users.push({username: socket.username});
+
+			getTrendingTopics(emitTrendingTopics);
+
+			function emitTrendingTopics(topics, trackString) {
+				socket.topics = topics
+				socket.trackString = trackString
+				socket.emit('trendingtopics', topics);
+			}
+		
+			console.log('new user ', users)
+		}
+	});
+
+	socket.on('set streams', function() {
+		client.stream('statuses/filter', {track: socket.trackString}, function(stream) {
+			stream.on('data', function(tweet) {
+				if (tweet.text) {
+					socket.topics.forEach(function(topic) {
+						if ((tweet.text).includes(topic.name)) {
+							topic.numberOfTweets++;
+							socket.emit('new tweet', socket.topics);
+						}		
+					});
+				}
+			});
+		});
+	});
+
+	socket.on('disconnect', function(data) {
+		if (!socket.username) return;
+
+		users = users.filter(function(user) {
+			return user.username !== socket.username;
+		});
+
+		console.log('disconnect ',  users)
+	});
+});
+
+function getTrendingTopics(callback) {
+	// The Netherlands woeid 23424909
+	// Global woeid 1
+	client.get('trends/place', {id: 23424909}, function(err, data) {
+		if (err) { console.error(err); }
+
+		var trendingArray = [];
 		var trackString = [];
-		for (var i = 0; i < 5; i++) {
+		for (var i = 0; i < 10; i++) {
 			var topicObject = {
 				name: data[0].trends[i].name,
 				numberOfTweets: 0
-			}
+			};
 			trendingArray.push(topicObject);
 			trackString.push(data[0].trends[i].name);
 		}
-
-		io.emit('trendingtopics', trendingArray)
 		trackString = trackString.join(', ');
-		setStream(trackString);
+
+		callback(trendingArray, trackString);
 	});
 }
-
-function setStream(trackTopics) {
-	var stream = client.stream('statuses/filter', { track: trackTopics });
-
-	stream.on('data', function(tweet) {
-		if(tweet.text) {
-			trendingArray.forEach(function(topic) {
-				if((tweet.text).includes(topic.name)) {
-					topic.numberOfTweets++
-					io.emit('topic tweet', trendingArray);
-				}		
-			});
-		}
-	});
-}
-
-getTrendingTopics();
-setInterval(getTrendingTopics, 60000);
-
-io.on('connection', function(socket) {
-	if(trendingArray) {
-		io.emit('trendingtopics', trendingArray)
-	}
-});
 
 app.get('/', function(req, res) {
 	res.render('index');
