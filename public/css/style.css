@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:200,300,400,700,900');
+
 body {
-	color: #333;
-	font-family: Avenir, sans-serif;
+	color: #404040;
+	font-family: 'Montserrat', sans-serif;
 	font-weight: 100;
 	margin: 0;
 }
@@ -11,23 +13,250 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: #ffd78d;
+	background: linear-gradient(155deg, #41b7ff 53%, #159aeb 47%);
+}
+
+h1, h2, h3, h4 {
+	font-family: 'Montserrat', sans-serif;
 }
 
 h1 {
 	margin: 0;
+	font-size: 2em;
 	font-weight: inherit;
 }
 
+h2 {
+	font-size: 1.2em;
+}
 
+p {
+	letter-spacing: .008em;
+	color: #3F3F3F;
+	font-weight: 300;
+}
+
+li {
+	box-sizing: border-box;
+}
+
+form {
+	box-sizing: border-box;
+}
+
+fieldset {
+	box-sizing: border-box;
+	border: 0;
+	padding: 0;
+	margin: 0;
+}
+
+input, textarea {
+	border: 3px solid #d2d2d2;
+	box-sizing: border-box;
+	font-family: inherit;
+	font-size: 1.2em;
+	padding: .5em;
+}
+
+button {
+	box-sizing: border-box;
+	letter-spacing: 4px;
+	text-transform: uppercase;
+	font-family: 'Montserrat', sans-serif;
+	border: 0;
+	font-size: 1.2em;
+	text-align: center;
+	display: block;
+	width: 100%;
+	color: white;
+	font-weight: 700;
+	margin-top: $margin*.5;
+	padding: .9em .7em;
+	background-color: #F9C006;
+	transition: all .2s ease-out;
+}
+
+.main-heading {
+	letter-spacing: 10px;
+	line-height: 102%;
+	text-align: center;
+	text-transform: uppercase;
+	color: white;
+	font-size: 4em;
+	font-weight: 900;
+}
+
+.sub-heading {
+	font-weight: 700;
+	font-size: 2em;
+	text-transform: uppercase;
+	margin: 0 0 1rem;
+	text-align: center;
+	letter-spacing: 4px;
+}
+
+.game-heading {
+	margin: 0;
+	font-weight: 200;
+	letter-spacing: 5px;
+	text-transform: uppercase;
+}
+
+.result-heading {
+	text-align: center;
+	font-size: 3em;
+	text-transform: uppercase;
+	margin: 0;
+}
+
+
+/* ========================================================
+//  Username
+// ======================================================*/
+.container-user-form {
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.user-form {
+	box-sizing: border-box;
+	width: 60%;
+}
+
+.username-fieldset {
+	display: flex;
+	flex-direction: column;
+}
+
+.username-fieldset input {
+	width: 100%;
+}
+
+
+/* ========================================================
+//	Topic choice
+// ======================================================*/
+.container-choose-topic {
+	width: 55%;
+}
+
+.container-choose-topic header p {
+	text-align: center;
+	font-size: 1.1em;
+}
+
+.container-topic-options {
+	box-sizing: border-box;
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+
+.container-topic-options li {
+	box-sizing: border-box;
+	padding: 1.5em 1em;
+	border: 5px solid white;
+	background-color: #F9C006;
+	color: white;
+	width: 50%;
+	text-align: center;
+}
+
+.container-topic-options li p {
+	font-weight: 700;
+	letter-spacing: 2px;
+	max-width: 100%;
+	margin: 0;
+	color: white;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	word-wrap: break-word;
+}
+
+.container-topic-options li:hover {
+	cursor: pointer;
+	background-color: #ffb947;
+}
 
 /* ========================================================
 //	Game
 // ======================================================*/
 .container-game {
+	background-color: white;
 	width: 100%;
-	height: 100%
+	height: 100%;
+	box-sizing: border-box;
+	display: flex;
 }
+
+.game-header {
+	display: flex;
+	justify-content: space-around;
+}
+
+.aside-tweets {
+	background-color: #159aeb;
+	height: 100%;
+	min-width: 25%;
+	max-width: 25%;
+	overflow: hidden;
+}
+
+.main-game {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	box-sizing: border-box;
+	min-width: 75%;
+	padding: 2em;
+	color: white;
+	background-color: #41b7ff;
+}
+
+.prediction, .counter {
+	font-weight: 700;
+	font-size: 2em;
+	margin: .5em 0;
+	color: white;
+	letter-spacing: 3px;
+}
+
+
+
+/* ========================================================
+//	Tweet
+// ======================================================*/
+.aside-tweets h2 {
+	color: white;
+	text-align: left;
+	margin: 1rem;
+}
+
+.container-tweet-text {
+	padding: 1em;
+	color: white;
+	max-width: 100%;
+}
+
+.tweet-text, .tweet-user {
+	font-size: .8em;
+	margin: 0;
+	font-weight: 200;
+	color: white;
+	max-width: 100%;
+	word-wrap: break-word;
+}
+
+.tweet-user {
+	font-weight: 700;
+}
+
 
 /* ========================================================
 //	Bar chart
@@ -40,16 +269,93 @@ h1 {
 .axis path,
 .axis line {
   fill: none;
-  stroke: #727272;
-  shape-rendering: crispEdges; }
+  stroke: white;
+  shape-rendering: crispEdges; 
+  stroke-width: 5px;
+}
+
+.x-axis {
+	z-index: 10;
+}
+
+.tick line {
+	visibility: hidden;
+}
 
 text {
-  fill: #727272; }
+  fill: white;
+    font-size: .7em; }
 
 .label {
-  font-size: .8em;
+  font-size: .7em;
   font-weight: 600; }
 
+.bar-chart-rect:nth-of-type(1) {
+	fill: #FFF0AD;
+}
+
+.bar-chart-rect:nth-of-type(2) {
+	fill: #FFE159;
+}
+
+.bar-chart-rect:nth-of-type(3) {
+	fill: #FFD202;
+}
+
+.bar-chart-rect:nth-of-type(4) {
+	fill: #FFB000;
+}
+
+.bar-chart-rect:nth-of-type(5) {
+	fill: #FF9602;
+}
+
+.bar-chart-rect:nth-of-type(6) {
+	fill: #EA6909;
+}
+
+
+
+/* ========================================================
+//	Result
+// ======================================================*/
+.container-result {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	left: 0;
+	top: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1;
+	background-color: rgba(74, 74, 74, .6);
+}
+
+.result {
+	margin: 1em;
+	padding: 2em;
+	background-color: white;
+	max-width: 100%;
+	max-height: 100%;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.result p {
+	text-align: center;
+	font-weight: 200;
+	font-size: 1.3em;
+}
+
+.result p span {
+	font-weight: 400;
+}
+
+.result button {
+	width: auto;
+	margin: 0 auto;
+	padding: 1em 1.5em;
+}
 
 
 /* ========================================================
@@ -58,7 +364,11 @@ text {
 .lightbox {
 	background-color: white;
 	z-index: 1;
-	padding: 1em;
+	padding: 2em;
+	margin: 1em;
+	max-width: 100%;
+	max-height: 100%;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 .hide {

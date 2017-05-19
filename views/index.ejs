@@ -1,26 +1,27 @@
 <% include partials/header.ejs %>
 	<article class="container-content">
-		<div class="container-user-form lightbox">
-			<header>
-				<h1>Trendwatch Twitter</h1>
-				<h2>Choose a username!</h2>
-			</header>
-			<section>
-				<form class="username-form">
-			    	<fieldset>
-			    		<label id="username">Username</label>
-			    		<input type="text" name="username" class="username-input">
-			    		<p class="username-error"></p>
-			    	</fieldset>
-			    	<button type="submit">Go</button>
-		    	</form>
-			</section>
+		<div class="container-user-form">
+			<h1 class="main-heading">Trendwatch<br> Twitter</h1>
+			<div class="user-form lightbox">
+				<header>
+					<h2 class="sub-heading">Choose a username!</h2>
+				</header>
+				<section>
+					<form class="username-form">
+				    	<fieldset class="username-fieldset">
+				    		<input type="text" name="username" class="username-input" required>
+				    		<p class="username-error"></p>
+				    	</fieldset>
+				    	<button type="submit">Go</button>
+			    	</form>
+				</section>
+			</div>
 		</div>
 
 		<div class="container-choose-topic hide lightbox">
 			<header>
-				<h1>Choose a topic!</h1>
-				<p>Predict which trending topic will get the most tweets in 2 minutes</p>
+				<h2 class="sub-heading">Choose a trend!</h2>
+				<p>Predict which trending topic will get the most tweets in the next minute</p>
 			</header>
 			<section>
 				<ul class="container-topic-options">
@@ -28,12 +29,36 @@
 				</ul>
 			</section>
 		</div>
-		<div class="container-game lightbox hide">
-			<header>
-				<h1>Trendwatch Twitter</h1>
-			</header>
-			<div class="container-trending-topic"></div>
-			<div class="container-bar-chart"></div>
+		<div class="container-game hide">
+			<aside class="aside-tweets">
+				<h2 class="sub-heading">Incoming tweets</h2>
+				<div class="container-tweets">
+					<div class="container-tweet-text">
+						<p class="tweet-text"></p>
+					</div>
+				</div>
+			</aside>
+			<section class="main-game">
+				<header class="game-header">
+					<div class="container-prediction">
+						<h3 class="game-heading">Your prediction</h3>
+						<p class="prediction"></p>
+					</div>
+					<div class="container-game-time">
+						<h3 class="game-heading">Time</h3>
+						<p class="counter">60</p>
+					</div>
+				</header>
+				<div class="container-bar-chart"></div>
+			</section>
+			<div class="container-result hide">
+				<div class="result">
+					<h2 class="result-heading"></h2>
+					<p class="result-message">You got it <span class="user-result"></span>:</p>
+					<p><span class="twitter-result"></span> was the most tweeted trend<br> in the last minute!</p>
+					<button class="btn-play-again">Play again</button>
+				</div>
+			</div>
 		</div>
 	</article>
 <% include partials/footer.ejs %>

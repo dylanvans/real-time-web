@@ -21,10 +21,12 @@
 
 			this.formEl.addEventListener('submit', function(e) {
 				e.preventDefault();
+				var inputValue = this.userInputEl.value;
 
-				this.socket.emit('new user', this.userInputEl.value, function(data) {
+				this.socket.emit('new user', inputValue, function(data) {
 					if (data) {
 						this.formContainer.classList.add('hide');
+						this.username = inputValue;
 						twitter.getTrendingTopics();
 					} else {
 						this.feedbackEl.innerHTML = 'Username already in use';
@@ -37,13 +39,18 @@
 	var twitter = {
 		getTrendingTopics: function() {
 			user.socket.on('trendingtopics', function(data) {
-				this.trendingTopics = data;
-				game.chooseTopic();
+				utils.shuffleArray(data, callback);
+
+				function callback() {			
+					game.chooseTopic()
+				}
 			}.bind(this));
 		},
 		getTweets: function() {
-			user.socket.on('new tweet', function(data) {
-				barChart.update(data)
+			user.socket.on('new tweet', function(data, tweet) {
+				twitter.data = data;
+				barChart.update(data);
+				game.setTweetText(tweet.text, tweet.user.name);
 			});
 		}
 	};
@@ -58,7 +65,7 @@
 			twitter.trendingTopics.forEach(function(topic) {
 				var element = document.createElement('li');
 				element.classList.add('topic-option');
-				element.innerHTML = topic.name;
+				element.innerHTML = `<p>${topic.name}</p>`;
 				element.id = topic.name;
 
 				element.addEventListener('click', function() {
@@ -72,14 +79,73 @@
 		start: function() {
 			this.gameContainer = document.querySelector('.container-game');
 
+			this.setTimer();
 			user.socket.emit('set streams');
 
+			this.setPrediction();
+			this.setStop();
 			twitter.getTweets();
 
 			this.chooseTopicContainer.classList.add('hide');
 			this.gameContainer.classList.remove('hide');
 			
 			barChart.set(twitter.trendingTopics);
+		},
+		setStop: function() {
+			user.socket.on('stop game', function(){
+				clearInterval(game.timer);
+				game.setResult();
+				console.log('stop the game bitch')
+			});
+		},
+		setTweetText: function(text, user) {
+			this.tweetsContainer = this.gameContainer.querySelector('.container-tweets');
+
+			var element = document.createElement('div');
+				element.classList.add('container-tweet-text');
+				element.innerHTML = `<div class="container-tweet-text">
+										<p class="tweet-user">@${user}</p>
+										<p class="tweet-text">${text}</p>
+									</div>`;
+
+			this.tweetsContainer.insertAdjacentHTML('afterbegin', element.innerHTML);
+		},
+		setPrediction: function() {
+			this.predictionEl = this.gameContainer.querySelector('.prediction');
+			this.predictionEl.innerHTML = user.socket.prediction;
+		},
+		setTimer: function() {
+			var timerEl = this.gameContainer.querySelector('.counter');
+
+			// Source: https://stackoverflow.com/questions/10541609/make-a-countdown-from-timer
+			var count = 30;
+			this.timer = setInterval(function() {
+				timerEl.innerHTML = count--;
+				if(this.count <= 0) clearInterval(this.timer);
+			}, 1000);
+		},
+		setResult: function() {
+			this.resultContainer = this.gameContainer.querySelector('.container-result');
+			this.resultHeadingEl = this.resultContainer.querySelector('.result-heading');
+			this.userResultEl = this.resultContainer.querySelector('.user-result');
+			this.twitterResultEl = this.resultContainer.querySelector('.twitter-result');
+			this.playAgainBtnEl = this.resultContainer.querySelector('.btn-play-again');
+
+			this.playAgainBtnEl.addEventListener('click', function() {
+				window.location.reload(false);
+			});
+			
+			this.topicWinner = twitter.data.reduce(function(prev, current) {
+				return (prev.numberOfTweets > current.numberOfTweets) ? prev : current;
+			});
+
+			this.resultUser = (this.topicWinner.name === user.socket.prediction) ? 'right' : 'wrong';
+
+			this.resultHeadingEl.innerHTML = (this.resultUser == 'right') ? `Congratulations <br> ${user.username}!` : `Better luck next<br> time ${user.username}!`;
+			this.userResultEl.innerHTML = this.resultUser;
+			this.twitterResultEl.innerHTML = this.topicWinner.name;
+
+			this.resultContainer.classList.remove('hide');
 		}
 	};
 
@@ -95,8 +161,8 @@
 							.attr('width', this.width)
 							.attr('height', this.height);
 
-			this.barChartWidth = this.width - 70;
-			this.barChartHeight = this.height - 20;
+			this.barChartWidth = this.width - 50;
+			this.barChartHeight = this.height - 70;
 
 			// Set ranges
 			this.xScale = d3.scale.ordinal().rangeRoundBands([0, this.barChartWidth], .15);
@@ -158,6 +224,28 @@
 					.attr('width', this.xScale.rangeBand())
 					.attr('y', function(d) { return yScale(d.numberOfTweets); })
 					.attr('height', function(d) { return barChartHeight - yScale(d.numberOfTweets); });
+		}
+	}
+
+	var utils = {
+		shuffleArray: function(array, callback) {
+			// Source: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+			var currentIndex = array.length, temporaryValue, randomIndex;
+
+			// While there remain elements to shuffle...
+			while (0 !== currentIndex) {
+				// Pick a remaining element...
+				randomIndex = Math.floor(Math.random() * currentIndex);
+				currentIndex -= 1;
+
+				// And swap it with the current element.
+				temporaryValue = array[currentIndex];
+				array[currentIndex] = array[randomIndex];
+				array[randomIndex] = temporaryValue;
+			}
+
+			twitter.trendingTopics = array;
+			callback(array)
 		}
 	}
 

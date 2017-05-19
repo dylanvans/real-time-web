@@ -64,15 +64,22 @@ io.on('connection', function(socket) {
 	socket.on('set streams', function() {
 		client.stream('statuses/filter', {track: socket.trackString}, function(stream) {
 			stream.on('data', function(tweet) {
-				if (tweet.text) {
-					socket.topics.forEach(function(topic) {
-						if ((tweet.text).includes(topic.name)) {
-							topic.numberOfTweets++;
-							socket.emit('new tweet', socket.topics);
-						}		
-					});
+				if(tweet.user) {
+					if(tweet.user.lang === 'en') {
+						socket.topics.forEach(function(topic) {
+							if ((tweet.text).includes(topic.name)) {
+								topic.numberOfTweets++;
+								socket.emit('new tweet', socket.topics, tweet);
+							}		
+						});
+					}
 				}
 			});
+
+			setTimeout(function() {
+				stream.destroy();
+				socket.emit('stop game');
+			}, 30000);
 		});
 	});
 
@@ -90,12 +97,14 @@ io.on('connection', function(socket) {
 function getTrendingTopics(callback) {
 	// The Netherlands woeid 23424909
 	// Global woeid 1
-	client.get('trends/place', {id: 23424909}, function(err, data) {
+	// uk woeid 23424975
+	// USA woeid 23424977
+	client.get('trends/place', {id: 23424977}, function(err, data) {
 		if (err) { console.error(err); }
 
 		var trendingArray = [];
 		var trackString = [];
-		for (var i = 0; i < 10; i++) {
+		for (var i = 0; i < 6; i++) {
 			var topicObject = {
 				name: data[0].trends[i].name,
 				numberOfTweets: 0
