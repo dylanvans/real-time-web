@@ -7,22 +7,35 @@
 
 	var user = {
 		init: function() {
-			this.connectSocket();
+			this.setConnection();
 			this.usernameForm();
 			this.setPlayAgainBtn();
 			twitter.setError();
 		},
-		connectSocket: function() {
+		setConnection: function() {
 			this.socket = io.connect();
 			this.connectionErrorContainer = document.querySelector('.container-connection-error');
 
+			navigator.onLine ? hideConnectionError() : showConnectionError();
+
+			window.addEventListener('offline', showConnectionError);
+			window.addEventListener('online', hideConnectionError);
+
 			this.socket.on('disconnect', function() {
-				this.connectionErrorContainer.classList.remove('hide');
+				showConnectionError();
 			}.bind(this));
 
 			this.socket.on('reconnect', function() {
-				this.connectionErrorContainer.classList.add('hide');
+				hideConnectionError();
 			}.bind(this));
+
+			function showConnectionError() {
+				this.connectionErrorContainer.classList.remove('hide');
+			}
+
+			function hideConnectionError() {
+				this.connectionErrorContainer.classList.add('hide');
+			}
 		},
 		usernameForm: function() {
 			this.formContainer = document.querySelector('.container-user-form');
