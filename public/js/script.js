@@ -31,11 +31,11 @@
 
 			function showConnectionError() {
 				this.connectionErrorContainer.classList.remove('hide');
-			}
+			}.bind(this);
 
 			function hideConnectionError() {
 				this.connectionErrorContainer.classList.add('hide');
-			}
+			}.bind(this);
 		},
 		usernameForm: function() {
 			this.formContainer = document.querySelector('.container-user-form');
