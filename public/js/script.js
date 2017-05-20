@@ -9,9 +9,20 @@
 		init: function() {
 			this.connectSocket();
 			this.usernameForm();
+			this.setPlayAgainBtn();
+			twitter.setError();
 		},
 		connectSocket: function() {
 			this.socket = io.connect();
+			this.connectionErrorContainer = document.querySelector('.container-connection-error');
+
+			this.socket.on('disconnect', function() {
+				this.connectionErrorContainer.classList.remove('hide');
+			}.bind(this));
+
+			this.socket.on('reconnect', function() {
+				this.connectionErrorContainer.classList.add('hide');
+			}.bind(this));
 		},
 		usernameForm: function() {
 			this.formContainer = document.querySelector('.container-user-form');
@@ -33,6 +44,15 @@
 					}
 				}.bind(this));
 			}.bind(this));
+		},
+		setPlayAgainBtn: function() {
+			this.playAgainBtnEl = document.querySelectorAll('.btn-play-again');
+
+			this.playAgainBtnEl.forEach(function(el) {
+				el.addEventListener('click', function() {
+					window.location.reload(false);
+				});
+			});
 		}
 	};
 
@@ -52,6 +72,18 @@
 				barChart.update(data);
 				game.setTweetText(tweet.text, tweet.user.name);
 			});
+		},
+		setError: function() {
+			this.errorContainer = document.querySelector('.container-error');
+			this.errorMessageEl = this.errorContainer.querySelector('.error-message');
+
+			user.socket.on('error on stream', function(error) {
+				this.errorContainer.classList.remove('hide');
+
+				if(error.source) {
+					this.errorMessageEl.innerHTML = error.source;
+				}
+			}.bind(this));
 		}
 	};
 
@@ -121,23 +153,24 @@
 			var count = 30;
 			this.timer = setInterval(function() {
 				timerEl.innerHTML = count--;
-				if(this.count <= 0) clearInterval(this.timer);
-			}, 1000);
+				if(count < 0) {
+					clearInterval(this.timer);
+					game.setResult();
+				} 
+			}.bind(this), 1000);
 		},
 		setResult: function() {
 			this.resultContainer = this.gameContainer.querySelector('.container-result');
+			this.asideTweetsEl = this.gameContainer.querySelector('.aside-tweets');
 			this.resultHeadingEl = this.resultContainer.querySelector('.result-heading');
 			this.userResultEl = this.resultContainer.querySelector('.user-result');
 			this.twitterResultEl = this.resultContainer.querySelector('.twitter-result');
-			this.playAgainBtnEl = this.resultContainer.querySelector('.btn-play-again');
-
-			this.playAgainBtnEl.addEventListener('click', function() {
-				window.location.reload(false);
-			});
 			
 			this.topicWinner = twitter.data.reduce(function(prev, current) {
 				return (prev.numberOfTweets > current.numberOfTweets) ? prev : current;
 			});
+
+			this.asideTweetsEl.style.overflowY = 'scroll';
 
 			this.resultUser = (this.topicWinner.name === user.socket.prediction) ? 'right' : 'wrong';
 

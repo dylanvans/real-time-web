@@ -63,6 +63,11 @@ io.on('connection', function(socket) {
 
 	socket.on('set streams', function() {
 		client.stream('statuses/filter', {track: socket.trackString}, function(stream) {
+			stream.on('error', function(error) {
+				socket.emit('error on stream', error)
+				console.log(error)
+			});
+
 			stream.on('data', function(tweet) {
 				if(tweet.user) {
 					if(tweet.user.lang === 'en') {
