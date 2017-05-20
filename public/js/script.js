@@ -16,26 +16,22 @@
 			this.socket = io.connect();
 			this.connectionErrorContainer = document.querySelector('.container-connection-error');
 
-			navigator.onLine ? hideConnectionError() : showConnectionError();
+			navigator.onLine ? this.connectionErrorContainer.classList.add('hide') : this.connectionErrorContainer.classList.remove('hide');
 
-			window.addEventListener('offline', showConnectionError);
-			window.addEventListener('online', hideConnectionError);
+			window.addEventListener('offline', function() {
+				this.connectionErrorContainer.classList.remove('hide');
+			}.bind(this));
+			window.addEventListener('online', function() {
+				this.connectionErrorContainer.classList.add('hide');
+			}.bind(this));
 
 			this.socket.on('disconnect', function() {
-				showConnectionError();
+				this.connectionErrorContainer.classList.remove('hide');
 			}.bind(this));
 
 			this.socket.on('reconnect', function() {
-				hideConnectionError();
-			}.bind(this));
-
-			function showConnectionError() {
-				this.connectionErrorContainer.classList.remove('hide');
-			}.bind(this);
-
-			function hideConnectionError() {
 				this.connectionErrorContainer.classList.add('hide');
-			}.bind(this);
+			}.bind(this));
 		},
 		usernameForm: function() {
 			this.formContainer = document.querySelector('.container-user-form');
