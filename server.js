@@ -50,14 +50,21 @@ io.on('connection', function(socket) {
 			socket.username = data;
 			users.push({username: socket.username});
 
-			getTrendingTopics(emitTrendingTopics);
-
-			function emitTrendingTopics(topics, trackString) {
-				socket.topics = topics
-				socket.trackString = trackString
-				socket.emit('trendingtopics', topics);
-			}
 			console.log('new user ', users)
+		}
+	});
+
+	socket.on('set country', function(country, woeid) {
+		socket.selectedCountry = country;
+		socket.selectedWoeid = woeid;
+		socket.selectedLang = (country == 'nl') ? 'nl' : 'en';
+
+		getTrendingTopics(woeid, emitTrendingTopics);
+
+		function emitTrendingTopics(topics, trackString) {
+			socket.topics = topics;
+			socket.trackString = trackString;
+			socket.emit('trendingtopics', topics);
 		}
 	});
 
@@ -70,11 +77,10 @@ io.on('connection', function(socket) {
 
 			stream.on('data', function(tweet) {
 				if(tweet.user) {
-					if(tweet.user.lang === 'en') {
+					if(tweet.user.lang === socket.selectedLang) {
 						socket.topics.forEach(function(topic) {
 							if ((tweet.text).includes(topic.name)) {
 								topic.numberOfTweets++;
-								console.log(socket.topics)
 								socket.emit('new tweet', socket.topics, tweet);
 							}		
 						});
@@ -100,21 +106,20 @@ io.on('connection', function(socket) {
 	});
 });
 
-function getTrendingTopics(callback) {
-	// The Netherlands woeid 23424909
-	// Global woeid 1
-	// uk woeid 23424975
-	// USA woeid 23424977
-	client.get('trends/place', {id: 23424977}, function(err, data) {
+function getTrendingTopics(woeid, callback) {
+	client.get('trends/place', {id: woeid}, function(err, data) {
 		if (err) { console.error(err); }
 
 		var trendingArray = [];
 		var trackString = [];
 
-		var trends = data[0].trends.slice(0, 12);
-		trends = shuffle(trends)
+		var subsetTrends = data[0].trends.slice(0, 10);
+		var top2 = subsetTrends.slice(0, 2);
+		var remaining = subsetTrends.slice(2, 6);
+		var trends = top2.concat(remaining);
+		trends = shuffle(trends);
 
-		for (var i = 0; i < 6; i++) {
+		for (var i = 0; i < trends.length; i++) {
 			var topicObject = {
 				name: trends[i].name,
 				numberOfTweets: 0

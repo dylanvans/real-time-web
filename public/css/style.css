@@ -137,6 +137,33 @@ button {
 }
 
 
+.country-fieldset label {
+	width: 100%;
+	margin-bottom: .5rem;
+	display: block;
+	box-sizing: border-box;
+	padding: 1em;
+	text-align: center;
+	background-color: #41b7ff;
+	color: white;
+	font-weight: 700;
+	letter-spacing: 3px;
+	font-size: 1.1em;
+}
+
+.country-input:checked + label {
+	background-color: #159aeb;
+}
+
+.country-input {
+	position: absolute; 
+	overflow: hidden; 
+	clip: rect(0 0 0 0); 
+	height: 1px; width: 1px; 
+	margin: -1px; padding: 0; border: 0; 
+}
+
+
 /* ========================================================
 //	Topic choice
 // ======================================================*/

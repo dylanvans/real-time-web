@@ -10,17 +10,16 @@
 			this.setConnection();
 			this.usernameForm();
 			this.setPlayAgainBtn();
-			twitter.setError();
+			twitter.init();
 		},
 		setConnection: function() {
 			this.socket = io.connect();
 			this.connectionErrorContainer = document.querySelector('.container-connection-error');
 
-			navigator.onLine ? this.connectionErrorContainer.classList.add('hide') : this.connectionErrorContainer.classList.remove('hide');
-
 			window.addEventListener('offline', function() {
 				this.connectionErrorContainer.classList.remove('hide');
 			}.bind(this));
+
 			window.addEventListener('online', function() {
 				this.connectionErrorContainer.classList.add('hide');
 			}.bind(this));
@@ -47,7 +46,7 @@
 					if (data) {
 						this.formContainer.classList.add('hide');
 						this.username = inputValue;
-						twitter.getTrendingTopics();
+						game.chooseCountry();
 					} else {
 						this.feedbackEl.innerHTML = 'Username already in use';
 					}
@@ -66,10 +65,14 @@
 	};
 
 	var twitter = {
+		init: function() {
+			this.setError();
+			this.getTrendingTopics();
+		},
 		getTrendingTopics: function() {
 			user.socket.on('trendingtopics', function(data) {
 				twitter.trendingTopics = data;		
-				game.chooseTopic()
+				game.chooseTopic();
 			}.bind(this));
 		},
 		getTweets: function() {
@@ -94,6 +97,26 @@
 	};
 
 	var game = {
+		chooseCountry: function() {
+			this.chooseCountryContainer = document.querySelector('.container-choose-country');
+			this.chooseCountryForm = this.chooseCountryContainer.querySelector('.country-form');
+			this.countryInputEl = this.chooseCountryContainer.querySelectorAll('.country-input');
+
+			this.chooseCountryContainer.classList.remove('hide');
+
+			this.chooseCountryForm.addEventListener('submit', function(e) {
+				e.preventDefault();
+
+				this.chooseCountryContainer.classList.add('hide');
+				this.countryInputEl.forEach(function(el) {
+					if(el.checked) {
+						var country = el.value;
+						var woeid = el.dataset.woeid;
+						user.socket.emit('set country', country, woeid);
+					}
+				});
+			}.bind(this));
+		},
 		chooseTopic: function() {
 			this.chooseTopicContainer = document.querySelector('.container-choose-topic');
 			this.topicOptionsContainer = this.chooseTopicContainer.querySelector('.container-topic-options');
