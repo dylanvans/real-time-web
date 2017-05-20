@@ -74,6 +74,7 @@ io.on('connection', function(socket) {
 						socket.topics.forEach(function(topic) {
 							if ((tweet.text).includes(topic.name)) {
 								topic.numberOfTweets++;
+								console.log(socket.topics)
 								socket.emit('new tweet', socket.topics, tweet);
 							}		
 						});

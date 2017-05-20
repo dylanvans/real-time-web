@@ -80,6 +80,7 @@
 				twitter.data = data;
 				barChart.update(data);
 				game.setTweetText(tweet.text, tweet.user.name);
+				console.log(twitter.data)
 			});
 		},
 		setError: function() {
