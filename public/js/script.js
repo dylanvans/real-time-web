@@ -68,11 +68,8 @@
 	var twitter = {
 		getTrendingTopics: function() {
 			user.socket.on('trendingtopics', function(data) {
-				utils.shuffleArray(data, callback);
-
-				function callback() {			
-					game.chooseTopic()
-				}
+				twitter.trendingTopics = data;		
+				game.chooseTopic()
 			}.bind(this));
 		},
 		getTweets: function() {
@@ -80,7 +77,6 @@
 				twitter.data = data;
 				barChart.update(data);
 				game.setTweetText(tweet.text, tweet.user.name);
-				console.log(twitter.data)
 			});
 		},
 		setError: function() {
@@ -267,28 +263,6 @@
 					.attr('width', this.xScale.rangeBand())
 					.attr('y', function(d) { return yScale(d.numberOfTweets); })
 					.attr('height', function(d) { return barChartHeight - yScale(d.numberOfTweets); });
-		}
-	}
-
-	var utils = {
-		shuffleArray: function(array, callback) {
-			// Source: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-			var currentIndex = array.length, temporaryValue, randomIndex;
-
-			// While there remain elements to shuffle...
-			while (0 !== currentIndex) {
-				// Pick a remaining element...
-				randomIndex = Math.floor(Math.random() * currentIndex);
-				currentIndex -= 1;
-
-				// And swap it with the current element.
-				temporaryValue = array[currentIndex];
-				array[currentIndex] = array[randomIndex];
-				array[randomIndex] = temporaryValue;
-			}
-
-			twitter.trendingTopics = array;
-			callback(array)
 		}
 	}
 

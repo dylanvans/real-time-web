@@ -110,18 +110,42 @@ function getTrendingTopics(callback) {
 
 		var trendingArray = [];
 		var trackString = [];
+
+		var trends = data[0].trends.slice(0, 12);
+		trends = shuffle(trends)
+
 		for (var i = 0; i < 6; i++) {
 			var topicObject = {
-				name: data[0].trends[i].name,
+				name: trends[i].name,
 				numberOfTweets: 0
 			};
 			trendingArray.push(topicObject);
-			trackString.push(data[0].trends[i].name);
+			trackString.push(trends[i].name);
 		}
 		trackString = trackString.join(', ');
 
 		callback(trendingArray, trackString);
 	});
+}
+
+function shuffle(array) {
+	// Source: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
 }
 
 app.get('/', function(req, res) {
