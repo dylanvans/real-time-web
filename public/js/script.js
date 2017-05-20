@@ -150,7 +150,7 @@
 			var timerEl = this.gameContainer.querySelector('.counter');
 
 			// Source: https://stackoverflow.com/questions/10541609/make-a-countdown-from-timer
-			var count = 30;
+			var count = 60;
 			this.timer = setInterval(function() {
 				timerEl.innerHTML = count--;
 				if(count < 0) {

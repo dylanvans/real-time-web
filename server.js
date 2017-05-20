@@ -84,7 +84,7 @@ io.on('connection', function(socket) {
 			setTimeout(function() {
 				stream.destroy();
 				socket.emit('stop game');
-			}, 30000);
+			}, 60000);
 		});
 	});
 
