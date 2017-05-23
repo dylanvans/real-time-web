@@ -24,7 +24,8 @@ client.get('trends/place', {id: woeid}, function() {});
 	{
 		name: 'Quintana',
 		numberOfTweets: 0
-	}
+	},
+	...
 ]
 ```
 4. The user selects a topic
@@ -33,7 +34,7 @@ client.get('trends/place', {id: woeid}, function() {});
 client.stream('statuses/filter', {track: socket.trackString}, function(stream) {});
 ```
 6. The stream is filtered on the language of the selected country
-7. If a new tweet comes in, the object belonging to the tweet will be updated. Where 'numberOfTweets' will get plus one.
+7. If a new tweet comes in, the object of the topic belonging to the tweet will be updated. Where 'numberOfTweets' will get plus one.
 ``` javascript
 stream.on('data', function(tweet) {});
 ```
@@ -48,13 +49,16 @@ socket.emit('new tweet', socket.topics, tweet);
 - Get tweets from multiple trending topics
 - Real time data visualization of the tweets that come in
 - Notify user when an error occurs on the stream with twitter
-- Notify user when connection between client and server is lost
-- Same data on server and client, even with tunnel events 
+- Notify user when connection between client and server fails
+- Same data on server and client, even with tunnel events
+- Read all the tweets afterwards
 
 ## Wishlist
 - OAuth 'Sign in with Twitter' option, so a user can share their predictions or score. And so the app has no rate limiting issues anymore.
 - Database integration for users, users score and the twitter data itself
 - A durable socket based timer. Right now the timer isn't exact and a bit unpredictable because of tunnel events
+- Browser/device testing
+- Refactor code to modules
 
 ## Installation
 1. Clone repository
@@ -84,14 +88,27 @@ npm run lint
 ```
 
 ## Events
-- socket.on('new user')
-- socket.on('set country')
-- socket.emit('trendingtopics')
-- socket.on('set streams')
-- stream.on('error') -> socket.emit('error on stream')
-- socket.on('new tweet')
-- socket.emit('stop game')
-- socket.on('disconnect')
+### Server
+- `connection` - Set all the other events on the connected socket
+- `new user` - Check if user already exist on server. If not, push es user to users array.
+- `set country` - Sets country and woeid to get trending topics
+- `trendingtopics` - Emits the collected topics to the client
+- `set streams` - Set streams with twitter to collect the tweets from the trending topics
+- `error on stream` - If an error occurs on the stream emit this to the client
+- `new tweet` - Emit the updated data to the client 
+- `stop game` - Emit to the client that the game is over
+- `disconnect` - Filter the disconnected user out of the users array
+
+### Client
+- `disconnect` - Show connection error to user
+- `reconnect` - Hide the connection error 
+- `new user` - Send username to server
+- `trending topics` - Retrieve the trending topics from the server
+- `new tweet` - update the data with the new data from the server and update the bar chart
+- `error on stream` - Show error notification to user
+- `set country` - Send selected country to server
+- `set streams` - Start the game
+- `stop game` - Stop the timer and set the results of the game
 
 ## Tooling
 - Express
