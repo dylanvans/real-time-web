@@ -6,7 +6,7 @@ In this app the goal of the user is to guess which Trending Topic on Twitter wil
 
 When the user has chosen a topic, a bar chart will be displayed with real time data. After 60 seconds, if the choice of the user and the topic with the most tweets matches, the user has won.
 
-![Screenshots game]()
+![Screenshots game](https://github.com/dylanvans/real-time-web/blob/master/md-img/screenshots.png?raw=true)
 
 ## Data
 
