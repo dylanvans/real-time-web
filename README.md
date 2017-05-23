@@ -43,12 +43,18 @@ socket.emit('new tweet', socket.topics, tweet);
 ```
 
 ## Features
-- Send and receive text messages through a socket.
-- Usernames for every user.
+- Usernames for users
+- Connection server and client through sockets, with socket.io
+- Get tweets from multiple trending topics
+- Real time data visualization of the tweets that come in
+- Notify user when an error occurs on the stream with twitter
+- Notify user when connection between client and server is lost
+- Same data on server and client, even with tunnel events 
 
 ## Wishlist
-- Database
-
+- OAuth 'Sign in with Twitter' option, so a user can share their predictions or score. And so the app has no rate limiting issues anymore.
+- Database integration for users, users score and the twitter data itself
+- A durable socket based timer. Right now the timer isn't exact and a bit unpredictable because of tunnel events
 
 ## Installation
 1. Clone repository
