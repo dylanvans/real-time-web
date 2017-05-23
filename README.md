@@ -111,11 +111,6 @@ npm run lint
 - `stop game` - Stop the timer and set the results of the game
 
 ## Tooling
-- Express
-- Node.js
-- Socket.io
-
-## Sources
 - [xo](https://github.com/sindresorhus/xo)
 - [Socket.io](https://socket.io/)
 - [Express](https://expressjs.com/)
