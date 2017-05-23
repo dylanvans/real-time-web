@@ -8,7 +8,39 @@ When the user has chosen a topic, a bar chart will be displayed with real time d
 
 ![Screenshots game](https://github.com/dylanvans/real-time-web/blob/master/md-img/screenshots.png?raw=true)
 
-## Data
+## Data life cycle
+1. A user selects a country
+2. Via the server, a request is done to twitter for trending topics from the selected country
+``` javascript
+client.get('trends/place', {id: woeid}, function() {});
+```
+3. Six topics are presented to the client and are pushed in an array like this:
+``` javascript
+[
+	{
+		name: '#WeStandTogether',
+		numberOfTweets: 0
+	},
+	{
+		name: 'Quintana',
+		numberOfTweets: 0
+	}
+]
+```
+4. The user selects a topic
+5. On the server, a stream to Twitter tracks all six trending topics on new tweets.
+``` javascript
+client.stream('statuses/filter', {track: socket.trackString}, function(stream) {});
+```
+6. The stream is filtered on the language of the selected country
+7. If a new tweet comes in, the object belonging to the tweet will be updated. Where 'numberOfTweets' will get plus one.
+``` javascript
+stream.on('data', function(tweet) {});
+```
+8. When the data is up to date a socket event is send to the client to update their data.
+``` javascript
+socket.emit('new tweet', socket.topics, tweet);
+```
 
 ## Features
 - Send and receive text messages through a socket.
